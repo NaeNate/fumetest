@@ -1,3 +1,4 @@
+import Button from "@/components/Button"
 import Link from "next/link"
 
 export default function Nav() {
@@ -6,6 +7,8 @@ export default function Nav() {
       <Link href={"/"} className="ml-4 text-3xl">
         Fumebank
       </Link>
+
+      <Button />
     </nav>
   )
 }
