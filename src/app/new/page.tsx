@@ -86,7 +86,9 @@ export default function New() {
           className="input"
         />
 
-        <button>Submit</button>
+        <br />
+
+        <button className="rounded bg-slate-500 p-3 text-white">Submit</button>
       </form>
     </>
   )

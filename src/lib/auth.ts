@@ -8,7 +8,7 @@ export const authOptions: AuthOptions = {
   providers: [
     Email({
       server: process.env.SERVER,
-      from: process.env.FROM,
+      from: "no-reply@bros.news",
     }),
   ],
 }

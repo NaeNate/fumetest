@@ -8,7 +8,7 @@ interface Props {
 }
 
 export default async function Designer({ params }: Props) {
-  const designer = await prisma.designer.findUniqueOrThrow({
+  const designer = await prisma.designer.findUnique({
     where: {
       slug: params.designer,
     },
@@ -16,6 +16,10 @@ export default async function Designer({ params }: Props) {
       lines: true,
     },
   })
+
+  if (!designer) {
+    throw Error("Designer not found")
+  }
 
   return (
     <>

@@ -39,6 +39,18 @@ model Fragrance {
 
   line   Line @relation(fields: [lineId], references: [id])
   lineId Int
+
+  wantedBy User[] @relation("want")
+  ownedBy  User[] @relation("have")
+
+  notes Note[]
+}
+
+model Note {
+  id   Int    @id @default(autoincrement())
+  name String
+
+  fragrances Fragrance[]
 }
 
 // Auth
@@ -78,6 +90,9 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+
+  want Fragrance[] @relation("want")
+  have Fragrance[] @relation("have")
 }
 
 model VerificationToken {

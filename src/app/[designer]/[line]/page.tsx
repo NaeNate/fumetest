@@ -8,7 +8,7 @@ interface Props {
 }
 
 export default async function Line({ params }: Props) {
-  const line = await prisma.line.findUniqueOrThrow({
+  const line = await prisma.line.findUnique({
     where: {
       slug: params.line,
     },
@@ -16,6 +16,10 @@ export default async function Line({ params }: Props) {
       fragrances: true,
     },
   })
+
+  if (!line) {
+    throw Error("Line not found")
+  }
 
   return (
     <>
