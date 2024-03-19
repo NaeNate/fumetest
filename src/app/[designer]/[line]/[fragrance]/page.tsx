@@ -9,7 +9,7 @@ interface Props {
   }
 }
 
-export default async function Fragrance({ params }: Props) {
+const getFragrance = async (params: Props["params"]) => {
   const fragrance = await prisma.fragrance.findFirst({
     where: {
       designer: {
@@ -29,6 +29,20 @@ export default async function Fragrance({ params }: Props) {
   if (!fragrance) {
     throw Error("Fragrance not found")
   }
+
+  return fragrance
+}
+
+export const generateMetadata = async ({ params }: Props) => {
+  const fragrance = await getFragrance(params)
+
+  return {
+    title: fragrance.name + " | Fumebank",
+  }
+}
+
+export default async function Fragrance({ params }: Props) {
+  const fragrance = await getFragrance(params)
 
   return (
     <>

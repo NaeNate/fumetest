@@ -7,10 +7,10 @@ interface Props {
   }
 }
 
-export default async function Designer({ params }: Props) {
+const getDesigner = async (slug: string) => {
   const designer = await prisma.designer.findUnique({
     where: {
-      slug: params.designer,
+      slug,
     },
     include: {
       lines: true,
@@ -20,6 +20,20 @@ export default async function Designer({ params }: Props) {
   if (!designer) {
     throw Error("Designer not found")
   }
+
+  return designer
+}
+
+export const generateMetadata = async ({ params }: Props) => {
+  const designer = await getDesigner(params.designer)
+
+  return {
+    title: designer.name + " | Fumebank",
+  }
+}
+
+export default async function Designer({ params }: Props) {
+  const designer = await getDesigner(params.designer)
 
   return (
     <>

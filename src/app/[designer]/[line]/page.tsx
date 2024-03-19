@@ -7,10 +7,10 @@ interface Props {
   }
 }
 
-export default async function Line({ params }: Props) {
+const getLine = async (slug: string) => {
   const line = await prisma.line.findUnique({
     where: {
-      slug: params.line,
+      slug,
     },
     include: {
       fragrances: true,
@@ -20,6 +20,20 @@ export default async function Line({ params }: Props) {
   if (!line) {
     throw Error("Line not found")
   }
+
+  return line
+}
+
+export const generateMetadata = async ({ params }: Props) => {
+  const line = await getLine(params.line)
+
+  return {
+    title: line.name + " | Fumebank",
+  }
+}
+
+export default async function Line({ params }: Props) {
+  const line = await getLine(params.line)
 
   return (
     <>
