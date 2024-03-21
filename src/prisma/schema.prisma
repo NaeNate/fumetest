@@ -19,9 +19,10 @@ model Designer {
 }
 
 model Line {
-  id   Int    @id @default(autoincrement())
-  name String
-  slug String @unique
+  id    Int    @id @default(autoincrement())
+  name  String
+  slug  String @unique
+  cover String
 
   designer   Designer @relation(fields: [designerId], references: [id])
   designerId Int
@@ -40,8 +41,8 @@ model Fragrance {
   line   Line @relation(fields: [lineId], references: [id])
   lineId Int
 
-  wantedBy User[] @relation("want")
-  ownedBy  User[] @relation("have")
+  wantedBy User[] @relation("Want")
+  ownedBy  User[] @relation("Have")
 
   notes Note[]
 }
@@ -91,8 +92,8 @@ model User {
   accounts      Account[]
   sessions      Session[]
 
-  want Fragrance[] @relation("want")
-  have Fragrance[] @relation("have")
+  want Fragrance[] @relation("Want")
+  have Fragrance[] @relation("Have")
 }
 
 model VerificationToken {

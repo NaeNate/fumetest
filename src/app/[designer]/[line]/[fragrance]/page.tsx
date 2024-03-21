@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma"
+import Image from "next/image"
 import Link from "next/link"
 
 interface Props {
@@ -12,9 +13,6 @@ interface Props {
 const getFragrance = async (params: Props["params"]) => {
   const fragrance = await prisma.fragrance.findFirst({
     where: {
-      designer: {
-        slug: params.designer,
-      },
       line: {
         slug: params.line,
       },
@@ -46,24 +44,42 @@ export default async function Fragrance({ params }: Props) {
 
   return (
     <>
-      <h1>{fragrance.name}</h1>
+      <h1 className="mb-4 text-center text-3xl">{fragrance.name}</h1>
 
-      <p>
-        Designer:{" "}
-        <Link href={"/" + fragrance.designer.slug} prefetch>
-          {fragrance.designer.name}
-        </Link>
-      </p>
+      <div className="mx-4 flex gap-4">
+        <div className="flex w-full items-center justify-center rounded bg-slate-200">
+          <Image
+            src={`https://fumetest.s3.us-east-2.amazonaws.com/${fragrance.designer.slug}/${fragrance.line.slug}/${fragrance.slug}.webp`}
+            alt="Image"
+            width={400}
+            height={400}
+          />
+        </div>
 
-      <p>
-        Line:{" "}
-        <Link
-          href={"/" + fragrance.designer.slug + "/" + fragrance.line.slug}
-          prefetch
-        >
-          {fragrance.line.name}
-        </Link>
-      </p>
+        <div className="w-full rounded bg-slate-200 p-3 text-center text-lg">
+          <p>
+            Designer:{" "}
+            <Link
+              href={"/" + fragrance.designer.slug}
+              prefetch
+              className="underline"
+            >
+              {fragrance.designer.name}
+            </Link>
+          </p>
+
+          <p>
+            Line:{" "}
+            <Link
+              href={"/" + fragrance.designer.slug + "/" + fragrance.line.slug}
+              prefetch
+              className="underline"
+            >
+              {fragrance.line.name}
+            </Link>
+          </p>
+        </div>
+      </div>
     </>
   )
 }

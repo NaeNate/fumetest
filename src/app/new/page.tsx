@@ -1,9 +1,17 @@
 "use client"
 
-import { useRouter } from "next/navigation"
+import { useSession } from "next-auth/react"
+import { redirect, useRouter } from "next/navigation"
 import { ChangeEvent, FormEvent, useState } from "react"
 
 export default function New() {
+  const { status, data } = useSession()
+
+  if (status === "unauthenticated") {
+    console.log(status, data)
+    redirect("/api/auth/signin")
+  }
+
   const [fields, setFields] = useState({
     designer: "",
     designerSlug: "",
@@ -11,25 +19,34 @@ export default function New() {
     lineSlug: "",
     fragrance: "",
     fragranceSlug: "",
+    image: undefined,
   })
 
   const router = useRouter()
 
   const edit = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
+    let { name, value } = e.target
+
+    if (name === "image") {
+      value = e.target.files![0] as any
+    }
+
     setFields((prev) => ({ ...prev, [name]: value }))
   }
 
   const submit = async (e: FormEvent) => {
     e.preventDefault()
 
+    const data = new FormData()
+    Object.entries(fields).forEach(([key, value]) => data.append(key, value!))
+
     await fetch("/api/new", {
       method: "POST",
-      body: JSON.stringify(fields),
+      body: data,
     })
 
     router.push(
-      fields.designerSlug + "/" + fields.lineSlug + "/" + fields.fragranceSlug,
+      `${fields.designerSlug}/${fields.lineSlug}/${fields.fragranceSlug}`,
     )
   }
 
@@ -84,7 +101,13 @@ export default function New() {
           className="input"
         />
 
-        <br />
+        <label
+          htmlFor="image"
+          className="input block w-min hover:cursor-pointer"
+        >
+          Image
+        </label>
+        <input type="file" id="image" name="image" onChange={edit} hidden />
 
         <button className="rounded bg-slate-500 p-3 text-white">Submit</button>
       </form>
