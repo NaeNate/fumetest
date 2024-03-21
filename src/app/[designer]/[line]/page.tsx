@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma"
+import { pathToUrl } from "@/utils/pathToUrl"
 import Image from "next/image"
 import Link from "next/link"
 
@@ -8,27 +9,13 @@ interface Props {
   }
 }
 
-const getLine = async (slug: string) => {
+export default async function Line({ params }: Props) {
   const line = await prisma.line.findUnique({
-    where: { slug },
+    where: { slug: params.line },
     include: { designer: true, fragrances: true },
   })
 
   if (!line) throw Error("Line not found")
-
-  return line
-}
-
-export const generateMetadata = async ({ params }: Props) => {
-  const line = await getLine(params.line)
-
-  return {
-    title: line.name + " | Fumebank",
-  }
-}
-
-export default async function Line({ params }: Props) {
-  const line = await getLine(params.line)
 
   return (
     <>
@@ -42,7 +29,7 @@ export default async function Line({ params }: Props) {
             className="rounded bg-slate-200"
           >
             <Image
-              src={`https://fumetest.s3.us-east-2.amazonaws.com/${line.designer.slug}/${line.slug}/${slug}.webp`}
+              src={pathToUrl(`${line.designer.slug}/${line.slug}/${slug}`)}
               alt="Fragrance Image"
               width={200}
               height={200}

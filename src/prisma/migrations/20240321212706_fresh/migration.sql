@@ -3,7 +3,6 @@ CREATE TABLE "Designer" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "slug" TEXT NOT NULL,
-    "cover" TEXT NOT NULL,
 
     CONSTRAINT "Designer_pkey" PRIMARY KEY ("id")
 );

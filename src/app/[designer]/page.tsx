@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma"
+import { pathToUrl } from "@/utils/pathToUrl"
 import Image from "next/image"
 import Link from "next/link"
 
@@ -7,28 +8,13 @@ interface Props {
     designer: string
   }
 }
-
-const getDesigner = async (slug: string) => {
+export default async function Designer({ params }: Props) {
   const designer = await prisma.designer.findUnique({
-    where: { slug },
+    where: { slug: params.designer },
     include: { lines: true },
   })
 
   if (!designer) throw Error("Designer not found")
-
-  return designer
-}
-
-export const generateMetadata = async ({ params }: Props) => {
-  const designer = await getDesigner(params.designer)
-
-  return {
-    title: designer.name + " | Fumebank",
-  }
-}
-
-export default async function Designer({ params }: Props) {
-  const designer = await getDesigner(params.designer)
 
   return (
     <>
@@ -42,7 +28,7 @@ export default async function Designer({ params }: Props) {
             className="rounded bg-slate-200"
           >
             <Image
-              src={`https://fumetest.s3.us-east-2.amazonaws.com/${cover}.webp`}
+              src={pathToUrl(cover)}
               alt="Line Image"
               width={200}
               height={200}

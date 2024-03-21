@@ -1,115 +1,84 @@
-"use client"
-
-import { useSession } from "next-auth/react"
-import { redirect, useRouter } from "next/navigation"
-import { ChangeEvent, FormEvent, useState } from "react"
+import { prisma } from "@/lib/prisma"
+import { NewData } from "@/types"
+import { slug } from "@/utils/slug"
+import { put } from "@vercel/blob"
+import { redirect } from "next/navigation"
+import { Fragment } from "react"
 
 export default function New() {
-  const { status, data } = useSession()
+  async function submit(formData: FormData) {
+    "use server"
 
-  if (status === "unauthenticated") {
-    console.log(status, data)
-    redirect("/api/auth/signin")
-  }
+    const raw = Object.fromEntries(formData) as unknown as NewData
 
-  const [fields, setFields] = useState({
-    designer: "",
-    designerSlug: "",
-    line: "",
-    lineSlug: "",
-    fragrance: "",
-    fragranceSlug: "",
-    image: undefined,
-  })
-
-  const router = useRouter()
-
-  const edit = (e: ChangeEvent<HTMLInputElement>) => {
-    let { name, value } = e.target
-
-    if (name === "image") {
-      value = e.target.files![0] as any
+    const data = {
+      ...raw,
+      dSlug: slug(raw.designer),
+      lSlug: slug(raw.line),
+      fSlug: slug(raw.fragrance),
     }
 
-    setFields((prev) => ({ ...prev, [name]: value }))
-  }
+    const path = `${data.dSlug}/${data.lSlug}/${data.fSlug}`
 
-  const submit = async (e: FormEvent) => {
-    e.preventDefault()
+    await prisma.$transaction(async (prisma) => {
+      let designer = await prisma.designer.findUnique({
+        where: { slug: data.dSlug },
+      })
 
-    const data = new FormData()
-    Object.entries(fields).forEach(([key, value]) => data.append(key, value!))
+      if (!designer) {
+        designer = await prisma.designer.create({
+          data: { name: data.designer, slug: data.dSlug },
+        })
+      }
 
-    await fetch("/api/new", {
-      method: "POST",
-      body: data,
+      let line = await prisma.line.findUnique({
+        where: { slug: data.lSlug },
+      })
+
+      if (!line) {
+        line = await prisma.line.create({
+          data: {
+            name: data.line,
+            slug: data.lSlug,
+            cover: path,
+            designerId: designer.id,
+          },
+        })
+      }
+
+      await prisma.fragrance.create({
+        data: {
+          name: data.fragrance,
+          slug: data.fSlug,
+          designerId: designer.id,
+          lineId: line.id,
+        },
+      })
     })
 
-    router.push(
-      `${fields.designerSlug}/${fields.lineSlug}/${fields.fragranceSlug}`,
-    )
+    await put(path + ".webp", data.image, {
+      access: "public",
+      addRandomSuffix: false,
+    })
+
+    redirect(path)
   }
 
   return (
     <>
-      <form onSubmit={submit}>
-        <p>Designer</p>
-        <input
-          name="designer"
-          value={fields.designer}
-          onChange={edit}
-          className="input"
-        />
+      <form action={submit}>
+        {["Designer", "Line", "Fragrance", "Image"].map((field, i) => (
+          <Fragment key={i}>
+            <p>{field}</p>
+            <input
+              type={i === 3 ? "file" : "text"}
+              name={field.toLowerCase()}
+              className="input"
+            />
+          </Fragment>
+        ))}
 
-        <p>Designer Slug</p>
-        <input
-          name="designerSlug"
-          value={fields.designerSlug}
-          onChange={edit}
-          className="input"
-        />
-
-        <p>Line</p>
-        <input
-          name="line"
-          value={fields.line}
-          onChange={edit}
-          className="input"
-        />
-
-        <p>Line Slug</p>
-        <input
-          name="lineSlug"
-          value={fields.lineSlug}
-          onChange={edit}
-          className="input"
-        />
-
-        <p>Fragrance</p>
-        <input
-          name="fragrance"
-          value={fields.fragrance}
-          onChange={edit}
-          className="input"
-        />
-
-        <p>Fragrance Slug</p>
-        <input
-          name="fragranceSlug"
-          value={fields.fragranceSlug}
-          onChange={edit}
-          className="input"
-        />
-
-        <label
-          htmlFor="image"
-          className="input block w-min hover:cursor-pointer"
-        >
-          Image
-        </label>
-        <input type="file" id="image" name="image" onChange={edit} hidden />
-
-        <button className="rounded bg-slate-500 p-3 text-white">Submit</button>
+        <button className="block rounded bg-slate-400 p-2">Submit</button>
       </form>
     </>
   )

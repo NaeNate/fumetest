@@ -1,7 +1,3 @@
-export const metadata = {
-  title: "Fumebank",
-}
-
 export default function Home() {
   return (
     <>

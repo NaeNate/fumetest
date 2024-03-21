@@ -1,46 +1,25 @@
 import { prisma } from "@/lib/prisma"
+import { pathToUrl } from "@/utils/pathToUrl"
 import Image from "next/image"
 import Link from "next/link"
 
 interface Props {
   params: {
-    designer: string
     line: string
     fragrance: string
   }
 }
 
-const getFragrance = async (params: Props["params"]) => {
+export default async function Fragrance({ params }: Props) {
   const fragrance = await prisma.fragrance.findFirst({
     where: {
-      line: {
-        slug: params.line,
-      },
+      line: { slug: params.line },
       slug: params.fragrance,
     },
-    include: {
-      designer: true,
-      line: true,
-    },
+    include: { designer: true, line: true },
   })
 
-  if (!fragrance) {
-    throw Error("Fragrance not found")
-  }
-
-  return fragrance
-}
-
-export const generateMetadata = async ({ params }: Props) => {
-  const fragrance = await getFragrance(params)
-
-  return {
-    title: fragrance.name + " | Fumebank",
-  }
-}
-
-export default async function Fragrance({ params }: Props) {
-  const fragrance = await getFragrance(params)
+  if (!fragrance) throw Error("Fragrance not found")
 
   return (
     <>
@@ -49,7 +28,9 @@ export default async function Fragrance({ params }: Props) {
       <div className="mx-4 flex gap-4">
         <div className="flex w-full items-center justify-center rounded bg-slate-200">
           <Image
-            src={`https://fumetest.s3.us-east-2.amazonaws.com/${fragrance.designer.slug}/${fragrance.line.slug}/${fragrance.slug}.webp`}
+            src={pathToUrl(
+              `${fragrance.designer.slug}/${fragrance.line.slug}/${fragrance.slug}`,
+            )}
             alt="Image"
             width={400}
             height={400}
@@ -59,11 +40,7 @@ export default async function Fragrance({ params }: Props) {
         <div className="w-full rounded bg-slate-200 p-3 text-center text-lg">
           <p>
             Designer:{" "}
-            <Link
-              href={"/" + fragrance.designer.slug}
-              prefetch
-              className="underline"
-            >
+            <Link href={"/" + fragrance.designer.slug} className="underline">
               {fragrance.designer.name}
             </Link>
           </p>
@@ -72,7 +49,6 @@ export default async function Fragrance({ params }: Props) {
             Line:{" "}
             <Link
               href={"/" + fragrance.designer.slug + "/" + fragrance.line.slug}
-              prefetch
               className="underline"
             >
               {fragrance.line.name}
