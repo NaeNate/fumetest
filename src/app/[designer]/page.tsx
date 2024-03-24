@@ -8,6 +8,7 @@ interface Props {
     designer: string
   }
 }
+
 export default async function Designer({ params }: Props) {
   const designer = await prisma.designer.findUnique({
     where: { slug: params.designer },

@@ -3,7 +3,6 @@ import { NewData } from "@/types"
 import { slug } from "@/utils/slug"
 import { put } from "@vercel/blob"
 import { redirect } from "next/navigation"
-import { Fragment } from "react"
 
 export default function New() {
   async function submit(formData: FormData) {
@@ -67,18 +66,19 @@ export default function New() {
   return (
     <>
       <form action={submit}>
-        {["Designer", "Line", "Fragrance", "Image"].map((field, i) => (
-          <Fragment key={i}>
-            <p>{field}</p>
-            <input
-              type={i === 3 ? "file" : "text"}
-              name={field.toLowerCase()}
-              className="input"
-            />
-          </Fragment>
-        ))}
+        <p>Designer</p>
+        <input name="designer" className="input" />
 
-        <button className="block rounded bg-slate-400 p-2">Submit</button>
+        <p>Line</p>
+        <input name="line" className="input" />
+
+        <p>Fragrance</p>
+        <input name="fragrance" className="input" />
+
+        <p>Image</p>
+        <input type="file" name="image" className="input" />
+
+        <button className="button block">Submit</button>
       </form>
     </>
   )

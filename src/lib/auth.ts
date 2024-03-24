@@ -11,4 +11,7 @@ export const authOptions: AuthOptions = {
       from: "no-reply@bros.news",
     }),
   ],
+  pages: {
+    newUser: "/auth/change",
+  },
 }
