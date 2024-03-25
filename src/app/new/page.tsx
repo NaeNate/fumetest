@@ -2,6 +2,8 @@ import { redirect } from "next/navigation"
 
 export default function New() {
   const handleNew = async (formData: FormData) => {
+    "use server"
+
     await fetch("/api/new", {
       method: "POST",
       body: formData,
