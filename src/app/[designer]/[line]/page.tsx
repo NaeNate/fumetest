@@ -19,15 +19,11 @@ export default async function Line({ params }: Props) {
 
   return (
     <>
-      <h1 className="text-center text-3xl">{line.name}</h1>
+      <h1>{line.name}</h1>
 
-      <div className="m-4 flex gap-4 text-center">
+      <div>
         {line.fragrances.map(({ name, slug }) => (
-          <Link
-            href={line.slug + "/" + slug}
-            key={slug}
-            className="rounded bg-slate-200"
-          >
+          <Link href={line.slug + "/" + slug} key={slug}>
             <Image
               src={pathToUrl(`${line.designer.slug}/${line.slug}/${slug}`)}
               alt="Fragrance Image"
@@ -35,7 +31,7 @@ export default async function Line({ params }: Props) {
               height={200}
             />
 
-            <p className="m-2 text-lg">{name}</p>
+            <p>{name}</p>
           </Link>
         ))}
       </div>

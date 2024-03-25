@@ -4,18 +4,15 @@ import { NextRequest, NextResponse } from "next/server"
 export async function POST(req: NextRequest) {
   const { username } = await req.json()
 
-  const exist = await prisma.user.findFirst({
+  const user = await prisma.user.findFirst({
     where: {
-      name: {
-        equals: username,
-        mode: "insensitive",
-      },
+      name: { equals: username, mode: "insensitive" },
     },
   })
 
-  if (!exist) {
-    return NextResponse.json("free")
+  if (user) {
+    return NextResponse.json({}, { status: 409 })
   }
 
-  return NextResponse.json("taken")
+  return NextResponse.json({}, { status: 200 })
 }

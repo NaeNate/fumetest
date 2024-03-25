@@ -1,4 +1,4 @@
-import AuthButtons from "@/components/AuthButtons"
+import Buttons from "@/components/Buttons"
 import Link from "next/link"
 
 export default function Nav() {
@@ -8,7 +8,7 @@ export default function Nav() {
         Fumebank
       </Link>
 
-      <AuthButtons />
+      <Buttons />
     </nav>
   )
 }

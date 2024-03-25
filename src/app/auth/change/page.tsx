@@ -5,29 +5,28 @@ import { redirect, useRouter } from "next/navigation"
 import { FormEvent, useState } from "react"
 
 export default function Change() {
+  const [username, setUsername] = useState("")
+  const [error, setError] = useState("")
+
+  const router = useRouter()
   const { data, status } = useSession()
 
   if (status === "unauthenticated") {
     redirect("/")
   }
 
-  const [username, setUsername] = useState("")
-  const [error, setError] = useState("")
-
-  const router = useRouter()
-
-  const tryUpdate = async (e: FormEvent) => {
+  const handleChange = async (e: FormEvent) => {
     e.preventDefault()
 
     const status = await fetch("/api/check", {
       method: "POST",
       body: JSON.stringify({ username }),
-    }).then((res) => res.json())
+    }).then((res) => res.status)
 
-    if (status === "free") {
+    if (status === 200) {
       await fetch("/api/change", {
         method: "POST",
-        body: JSON.stringify({ username, old: data?.user?.name }),
+        body: JSON.stringify({ username, current: data!.user!.name }),
       })
 
       router.push("/")
@@ -40,14 +39,14 @@ export default function Change() {
     <>
       <h1>Change Username</h1>
 
-      <form onSubmit={tryUpdate}>
+      <form onSubmit={handleChange}>
         <input
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           className="input"
         />
 
-        <button className="button">Try</button>
+        <button>Change</button>
       </form>
 
       <p>{error}</p>

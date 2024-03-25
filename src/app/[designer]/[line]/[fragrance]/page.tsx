@@ -23,10 +23,10 @@ export default async function Fragrance({ params }: Props) {
 
   return (
     <>
-      <h1 className="mb-4 text-center text-3xl">{fragrance.name}</h1>
+      <h1>{fragrance.name}</h1>
 
-      <div className="mx-4 flex gap-4">
-        <div className="flex w-full items-center justify-center rounded bg-slate-200">
+      <div>
+        <div>
           <Image
             src={pathToUrl(
               `${fragrance.designer.slug}/${fragrance.line.slug}/${fragrance.slug}`,
@@ -37,10 +37,10 @@ export default async function Fragrance({ params }: Props) {
           />
         </div>
 
-        <div className="w-full rounded bg-slate-200 p-3 text-center text-lg">
+        <div>
           <p>
             Designer:{" "}
-            <Link href={"/" + fragrance.designer.slug} className="underline">
+            <Link href={"/" + fragrance.designer.slug}>
               {fragrance.designer.name}
             </Link>
           </p>
@@ -49,7 +49,6 @@ export default async function Fragrance({ params }: Props) {
             Line:{" "}
             <Link
               href={"/" + fragrance.designer.slug + "/" + fragrance.line.slug}
-              className="underline"
             >
               {fragrance.line.name}
             </Link>
