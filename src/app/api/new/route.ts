@@ -56,5 +56,5 @@ export async function POST(req: NextRequest) {
     addRandomSuffix: false,
   })
 
-  return NextResponse.json({}, { status: 200 })
+  return NextResponse.json({ path: path }, { status: 200 })
 }

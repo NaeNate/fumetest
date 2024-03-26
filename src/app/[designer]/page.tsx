@@ -19,11 +19,15 @@ export default async function Designer({ params }: Props) {
 
   return (
     <>
-      <h1>{designer.name}</h1>
+      <h1 className="mb-4 text-center text-3xl">{designer.name}</h1>
 
-      <div>
+      <div className="m-4 flex gap-4">
         {designer.lines.map(({ name, slug, cover }) => (
-          <Link href={designer.slug + "/" + slug} key={slug}>
+          <Link
+            href={designer.slug + "/" + slug}
+            key={slug}
+            className="rounded bg-slate-300"
+          >
             <Image
               src={pathToUrl(cover)}
               alt="Line Image"
@@ -31,7 +35,7 @@ export default async function Designer({ params }: Props) {
               height={200}
             />
 
-            <p>{name}</p>
+            <p className="m-2 text-center text-lg">{name}</p>
           </Link>
         ))}
       </div>

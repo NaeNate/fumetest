@@ -18,13 +18,13 @@ export default function Change() {
   const handleChange = async (e: FormEvent) => {
     e.preventDefault()
 
-    const status = await fetch("/api/check", {
+    const status = await fetch("/api/auth/check", {
       method: "POST",
       body: JSON.stringify({ username }),
     }).then((res) => res.status)
 
     if (status === 200) {
-      await fetch("/api/change", {
+      await fetch("/api/auth/change", {
         method: "POST",
         body: JSON.stringify({ username, current: data!.user!.name }),
       })
@@ -43,6 +43,7 @@ export default function Change() {
         <input
           value={username}
           onChange={(e) => setUsername(e.target.value)}
+          pattern="[a-zA-Z.]+"
           className="input"
         />
 
